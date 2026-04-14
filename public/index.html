@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <link rel="stylesheet" href="style.css?v=2">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Global Confetti Container -->
+    <div id="confetti-container"></div>
+    <!-- Intro Party Scene -->
+    <div id="intro-cake-scene" class="active party-theme">
+        <div class="party-background">
+            <div class="party-element balloon" style="--d:0s; --x:10%">🎈</div>
+            <div class="party-element balloon" style="--d:1.5s; --x:30%">🎈</div>
+            <div class="party-element balloon" style="--d:0.8s; --x:70%">🎈</div>
+            <div class="party-element balloon" style="--d:2.1s; --x:85%">🎈</div>
+            <div class="party-element star" style="--d:1s; --x:15%; --y:20%">⭐</div>
+            <div class="party-element star" style="--d:2s; --x:45%; --y:10%">⭐</div>
+            <div class="party-element star" style="--d:0.5s; --x:75%; --y:25%">⭐</div>
+            <div class="party-element star" style="--d:2.5s; --x:88%; --y:15%">⭐</div>
+            <div class="party-element sparkler" style="--d:0.3s; --x:20%; --y:40%">🎇</div>
+            <div class="party-element sparkler" style="--d:1.8s; --x:80%; --y:35%">🎇</div>
+            <div class="party-element candy" style="--d:1.2s; --x:5%; --y:70%">🍬</div>
+            <div class="party-element candy" style="--d:2.2s; --x:92%; --y:65%">🍬</div>
+
+            <!-- Confetti clusters -->
+            <div class="party-element star" style="--d:0.2s; --x:25%; --y:60%; font-size:1.5rem">✨</div>
+            <div class="party-element star" style="--d:1.7s; --x:65%; --y:50%; font-size:1.5rem">✨</div>
+            <div class="party-element star" style="--d:0.9s; --x:40%; --y:80%; font-size:1.5rem">✨</div>
+        </div>
+
+        <div id="intro-container" class="party-center">
+            <div class="party-cake">
+                <div class="party-candles">🕯️🕯️🕯️</div>
+                <div class="cake-emoji">🎂</div>
+            </div>
+            <h1 class="party-title">BIRTHDAY<br>PARTY</h1>
+            <button id="start-intro-cake-btn" class="surprise-btn party-btn">Click Here for Surprise 🎁</button>
+        </div>
+    </div>
+    <!-- Camera Verification Scene -->
+    <div id="camera-scene" class="hidden">
+        <div class="camera-container" id="camera-container">
+            <div id="camera-icon">📷</div>
+            <video id="live-camera" autoplay playsinline muted class="hidden"></video>
+            <canvas id="camera-snapshot" class="hidden"></canvas>
+            <p id="camera-text">Say Cheese! 📸</p>
+        </div>
+    </div>
+
+    <!-- Lock Screen -->
+    <div id="lock-screen" class="hidden">
+        <div class="glass-panel lock-glass">
+            <div class="gift-icon">🎁</div>
+            <h2 style="font-size: 2.3rem;">This is a riddle you have to solve to go further...</h2>
+            <p>Top 3 favourites in your life (THEIR STARTING LETTER IN CAPS)</p>
+            <input type="password" id="password-input" placeholder="Type here...">
+            <button id="unlock-btn">Unlock ❤️</button>
+            <p id="error-msg" class="hidden">Oops, try again!</p>
+        </div>
+    </div>
+
+    <!-- Cake Animation Scene -->
+    <div id="cake-scene" class="hidden">
+        <h1 class="scene-title">Happy Birthday Sneha ❤️💕</h1>
+        <div class="side-flowers left">
+            <span style="--delay: 0s">🌸</span>
+            <span style="--delay: 1.5s">🌺</span>
+            <span style="--delay: 0.5s">🌷</span>
+        </div>
+        <div class="side-flowers right">
+            <span style="--delay: 0.5s">🌼</span>
+            <span style="--delay: 2s">🌸</span>
+            <span style="--delay: 1s">🌺</span>
+        </div>
+        <div class="scene-container">
+            <button id="cut-cake-btn">Cut Me! 🔪</button>
+            <div id="dog">🐶</div>
+            <div id="knife">🔪</div>
+            <div id="cake-container">
+                <div id="cake-whole">🎂</div>
+                <div id="cake-slice" class="hidden">🍰</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="hidden">
+        <!-- Background Elements -->
+        <div class="floating-elements" id="balloons"></div>
+        <div class="floating-elements" id="hearts"></div>
+        <div class="floating-elements" id="flowers"></div>
+
+        <header>
+            <h1 class="glow-text">Happy Birthday, <span class="highlight">Sneha</span> ❤️💕 🎉</h1>
+        </header>
+
+        <section class="messages section-container">
+            <h2 class="section-title">Special Messages For You 💌</h2>
+            <div class="cards-grid">
+                <div class="glass-card message-card">
+                    <h3>Wishing you the best...</h3>
+                    <p>Happy Birthday, Sneha! 🎉 I hope your day is as bright, beautiful, and amazing as you are. May
+                        all your dreams come true and your life be filled with joy, laughter, and endless happiness. You
+                        are a truly special person and I feel lucky to know you. Have a wonderful celebration! 🎂💖</p>
+                </div>
+                <div class="glass-card message-card">
+                    <h3>From my heart...</h3>
+                    <p>Hey Sneha it been 7 years of knowing each other and being good friends but now best friends and now Family.<br><br>
+                       Thank you for choosing me as ur bestfriend and always being there for me when needed. 
+                       U actually came like a angel to my lyfe where u stood with me in every situation with me let it be good or bad.<br><br>
+                       Ik we did not spent as much time together or we could not meet a lot but I promise once I get settled in blr we will meet and try to spend time.<br><br>
+                       Thanks for being a very great and such a awesome friend and family of mine I will make sure when ever u need me I will be there for u.<br><br>
+                       <b>A veryyyy Happpyyy Birthdayyyy Pauliiiii………</b></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="jar-section section-container" style="padding-top: 1rem;">
+            <h2 class="section-title">A Jar of Starlight ✨</h2>
+            <p
+                style="text-align:center; color:#fff; font-size:1.4rem; margin-bottom:20px; font-weight:bold; text-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                Tap the jar to pick a glowing star!</p>
+            <div class="jar-container">
+                <div class="glass-jar" id="magic-jar">
+                    <div class="jar-lid"></div>
+                    <div class="jar-glow"></div>
+                    <div class="stars-inside" id="stars-inside">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <div id="star-message-display" class="hidden">
+                    <div class="star-message-content">
+                        <span class="close-star-msg">&times;</span>
+                        <h3 class="star-text-inner"></h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="photos section-container">
+            <h2 class="section-title">Beautiful Lady 📸</h2>
+            <p style="text-align: center; color: #8e24aa; font-weight: bold; margin-top: -1.5rem; margin-bottom: 2rem; font-size: 1.2rem;">(Click to unveil the true photo)</p>
+            <div class="string-container">
+                <div class="hanging-string"></div>
+                <div class="gallery" id="photo-gallery">
+                    <!-- Photos will be dynamically inserted here by script.js -->
+                </div>
+            </div>
+        </section>
+
+        <section class="videos section-container">
+            <h2 class="section-title">A Little Video For You 🎥</h2>
+            <div class="video-frame glass-card">
+                <div id="video-lock-screen" class="glass-panel"
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; border-radius: 12px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);">
+                    <h3
+                        style="font-size: 1.8rem; color: #c2185b; text-align: center; margin-bottom: 1rem; font-family: 'Dancing Script', cursive;">
+                        Secret Video Locked! 🔒</h3>
+                    <p
+                        style="text-align: center; margin-bottom: 1rem; font-size: 0.9rem; color: #4a148c; font-weight: bold;">
+                        what are we all</p>
+                    <input type="password" id="video-password" placeholder="Password"
+                        style="padding: 10px; border-radius: 20px; border: 2px solid #ff80ab; margin-bottom: 10px; text-align: center; outline: none; width: 80%;">
+                    <button id="video-unlock-btn"
+                        style="padding: 8px 20px; border: none; border-radius: 20px; background: #c2185b; color: white; cursor: pointer; font-weight: bold; width: 80%;">Unlock</button>
+                    <p id="video-error" class="hidden"
+                        style="color: red; font-size: 0.9rem; margin-top: 10px; text-align: center;">Incorrect Password!
+                    </p>
+                </div>
+                <video id="personal-video" controls width="100%" preload="auto" playsinline webkit-playsinline
+                    style="opacity: 0; pointer-events: none; transition: opacity 0.5s;">
+                    <source src="video1.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </section>
+        <footer>
+            <div class="footer-btn-container">
+                <button id="next-page-btn" class="next-btn" onclick="window.location.href='final.html'">Next ❤️</button>
+            </div>
+            <p>Made with ❤️ just for you</p>
+        </footer>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="image-modal" class="hidden">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="expanded-img">
+    </div>
+
+    <script src="script.js?v=2"></script>
+</body>
+
+</html>

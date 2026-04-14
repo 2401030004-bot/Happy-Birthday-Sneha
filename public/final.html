@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Final Surprise for Sneha ❤️</title>
+    <link rel="stylesheet" href="style.css?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .final-page-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            text-align: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .final-image-container {
+            position: relative;
+            max-width: 600px;
+            width: 100%;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            border: 8px solid white;
+            transform: scale(0.9);
+            opacity: 0;
+            animation: finalReveal 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.5s;
+        }
+
+        @keyframes finalReveal {
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .final-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .final-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .final-text {
+            margin-top: 3rem;
+            opacity: 0;
+            animation: fadeIn 1.5s forwards 1.5s;
+        }
+
+        .final-title {
+            font-size: 4.5rem;
+            color: white;
+            text-shadow: 0 4px 15px rgba(136, 14, 79, 0.5);
+            margin-bottom: 1rem;
+        }
+
+        .final-subtitle {
+            font-size: 1.8rem;
+            color: #4a148c;
+            font-weight: 600;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 1rem 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-link {
+            margin-top: 2rem;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        /* Confetti or Sparks */
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            animation: sparkleFly 2s linear infinite;
+        }
+
+        @keyframes sparkleFly {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100vh) scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="final-page-body">
+    <!-- Floating background elements -->
+    <div class="floating-elements">
+        <div class="element" style="left: 10%; animation-duration: 8s;">🌸</div>
+        <div class="element" style="left: 30%; animation-duration: 12s;">💖</div>
+        <div class="element" style="left: 70%; animation-duration: 10s;">✨</div>
+        <div class="element" style="left: 90%; animation-duration: 9s;">🌷</div>
+    </div>
+
+    <div class="final-image-container">
+        <img src="sneha_final.jpg" alt="A Special Surprise for You">
+    </div>
+
+    <div class="final-text">
+        <h1 class="final-title">You Deserve All The Happiness! ❤️</h1>
+        <p class="final-subtitle">Every moment with you is a gift, and today we celebrate the incredible person you are. Happy Birthday, Sneha!</p>
+        <a href="index.html" class="back-link">← Go Back to Memories</a>
+    </div>
+
+    <script>
+        // Add some celebratory sparks
+        function createSpark() {
+            const symbols = ['⭐', '✨', '💖', '🎉', '🌸'];
+            const spark = document.createElement('div');
+            spark.className = 'sparkle';
+            spark.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            spark.style.left = Math.random() * 100 + 'vw';
+            spark.style.top = '100vh';
+            spark.style.fontSize = (Math.random() * 20 + 20) + 'px';
+            spark.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(spark);
+            
+            setTimeout(() => spark.remove(), 5000);
+        }
+
+        setInterval(createSpark, 300);
+    </script>
+</body>
+</html>

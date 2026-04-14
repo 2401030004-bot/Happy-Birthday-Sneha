@@ -1,0 +1,5 @@
+node_modules/
+captures/
+attempts.json
+.env
+.DS_Store
