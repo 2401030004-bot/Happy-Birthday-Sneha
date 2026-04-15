@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContent = document.getElementById('main-content');
     
     // Set your special character or password here
-    const correctPassword = "MMH"; 
+    const correctPassword = "SUPTA PAUL"; 
     
     function checkPassword() {
         const inputPass = passwordInput.value.trim();
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         }).catch(e => console.log("Log failed"));
 
-        if (inputPass === correctPassword) {
+        if (inputPass.toUpperCase() === correctPassword.toUpperCase()) {
             // Success - Start Sequence
             lockScreen.classList.add('hidden');
             setTimeout(() => {
